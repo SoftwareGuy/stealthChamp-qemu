@@ -1,0 +1,275 @@
+.\" Man page generated from reStructuredText.
+.
+.TH "QEMU-STORAGE-DAEMON" "1" "Jan 12, 2021" "5.2.50" "QEMU"
+.SH NAME
+qemu-storage-daemon \- QEMU storage daemon
+.
+.nr rst2man-indent-level 0
+.
+.de1 rstReportMargin
+\\$1 \\n[an-margin]
+level \\n[rst2man-indent-level]
+level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
+-
+\\n[rst2man-indent0]
+\\n[rst2man-indent1]
+\\n[rst2man-indent2]
+..
+.de1 INDENT
+.\" .rstReportMargin pre:
+. RS \\$1
+. nr rst2man-indent\\n[rst2man-indent-level] \\n[an-margin]
+. nr rst2man-indent-level +1
+.\" .rstReportMargin post:
+..
+.de UNINDENT
+. RE
+.\" indent \\n[an-margin]
+.\" old: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.nr rst2man-indent-level -1
+.\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.in \\n[rst2man-indent\\n[rst2man-indent-level]]u
+..
+.SH SYNOPSIS
+.sp
+\fBqemu\-storage\-daemon\fP [options]
+.SH DESCRIPTION
+.sp
+qemu\-storage\-daemon provides disk image functionality from QEMU, qemu\-img, and
+qemu\-nbd in a long\-running process controlled via QMP commands without running
+a virtual machine. It can export disk images, run block job operations, and
+perform other disk\-related operations. The daemon is controlled via a QMP
+monitor and initial configuration from the command\-line.
+.sp
+The daemon offers the following subset of QEMU features:
+.INDENT 0.0
+.IP \(bu 2
+Block nodes
+.IP \(bu 2
+Block jobs
+.IP \(bu 2
+Block exports
+.IP \(bu 2
+Throttle groups
+.IP \(bu 2
+Character devices
+.IP \(bu 2
+Crypto and secrets
+.IP \(bu 2
+QMP
+.IP \(bu 2
+IOThreads
+.UNINDENT
+.sp
+Commands can be sent over a QEMU Monitor Protocol (QMP) connection. See the
+\fBqemu\-storage\-daemon\-qmp\-ref(7)\fP manual page for a description of the
+commands.
+.sp
+The daemon runs until it is stopped using the \fBquit\fP QMP command or
+SIGINT/SIGHUP/SIGTERM.
+.sp
+\fBWarning:\fP Never modify images in use by a running virtual machine or any
+other process; this may destroy the image. Also, be aware that querying an
+image that is being modified by another process may encounter inconsistent
+state.
+.SH OPTIONS
+.sp
+Standard options:
+.INDENT 0.0
+.TP
+.B \-h, \-\-help
+Display help and exit
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-V, \-\-version
+Display version information and exit
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-T, \-\-trace [[enable=]PATTERN][,events=FILE][,file=FILE]
+Specify tracing options.
+.sp
+\fB[enable=]PATTERN\fP
+.INDENT 7.0
+.INDENT 3.5
+Immediately enable events matching \fIPATTERN\fP
+(either event name or a globbing pattern).  This option is only
+available if QEMU has been compiled with the \fBsimple\fP, \fBlog\fP
+or \fBftrace\fP tracing backend.  To specify multiple events or patterns,
+specify the \fB\-trace\fP option multiple times.
+.sp
+Use \fB\-trace help\fP to print a list of names of trace points.
+.UNINDENT
+.UNINDENT
+.sp
+\fBevents=FILE\fP
+.INDENT 7.0
+.INDENT 3.5
+Immediately enable events listed in \fIFILE\fP\&.
+The file must contain one event name (as listed in the \fBtrace\-events\-all\fP
+file) per line; globbing patterns are accepted too.  This option is only
+available if QEMU has been compiled with the \fBsimple\fP, \fBlog\fP or
+\fBftrace\fP tracing backend.
+.UNINDENT
+.UNINDENT
+.sp
+\fBfile=FILE\fP
+.INDENT 7.0
+.INDENT 3.5
+Log output traces to \fIFILE\fP\&.
+This option is only available if QEMU has been compiled with
+the \fBsimple\fP tracing backend.
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-\-blockdev BLOCKDEVDEF
+is a block node definition. See the \fBqemu(1)\fP manual page for a
+description of block node properties and the \fBqemu\-block\-drivers(7)\fP
+manual page for a description of driver\-specific parameters.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-\-chardev CHARDEVDEF
+is a character device definition. See the \fBqemu(1)\fP manual page for
+a description of character device properties. A common character device
+definition configures a UNIX domain socket:
+.INDENT 7.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+\-\-chardev socket,id=char1,path=/tmp/qmp.sock,server,nowait
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-\-export [type=]nbd,id=<id>,node\-name=<node\-name>[,name=<export\-name>][,writable=on|off][,bitmap=<name>]
+.TP
+.B \-\-export [type=]vhost\-user\-blk,id=<id>,node\-name=<node\-name>,addr.type=unix,addr.path=<socket\-path>[,writable=on|off][,logical\-block\-size=<block\-size>][,num\-queues=<num\-queues>]
+.TP
+.B \-\-export [type=]vhost\-user\-blk,id=<id>,node\-name=<node\-name>,addr.type=fd,addr.str=<fd>[,writable=on|off][,logical\-block\-size=<block\-size>][,num\-queues=<num\-queues>]
+is a block export definition. \fBnode\-name\fP is the block node that should be
+exported. \fBwritable\fP determines whether or not the export allows write
+requests for modifying data (the default is off).
+.sp
+The \fBnbd\fP export type requires \fB\-\-nbd\-server\fP (see below). \fBname\fP is
+the NBD export name. \fBbitmap\fP is the name of a dirty bitmap reachable from
+the block node, so the NBD client can use NBD_OPT_SET_META_CONTEXT with the
+metadata context name "qemu:dirty\-bitmap:BITMAP" to inspect the bitmap.
+.sp
+The \fBvhost\-user\-blk\fP export type takes a vhost\-user socket address on which
+it accept incoming connections. Both
+\fBaddr.type=unix,addr.path=<socket\-path>\fP for UNIX domain sockets and
+\fBaddr.type=fd,addr.str=<fd>\fP for file descriptor passing are supported.
+\fBlogical\-block\-size\fP sets the logical block size in bytes (the default is
+512). \fBnum\-queues\fP sets the number of virtqueues (the default is 1).
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-\-monitor MONITORDEF
+is a QMP monitor definition. See the \fBqemu(1)\fP manual page for
+a description of QMP monitor properties. A common QMP monitor definition
+configures a monitor on character device \fBchar1\fP:
+.INDENT 7.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+\-\-monitor chardev=char1
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-\-nbd\-server addr.type=inet,addr.host=<host>,addr.port=<port>[,tls\-creds=<id>][,tls\-authz=<id>][,max\-connections=<n>]
+.TP
+.B \-\-nbd\-server addr.type=unix,addr.path=<path>[,tls\-creds=<id>][,tls\-authz=<id>][,max\-connections=<n>]
+is a server for NBD exports. Both TCP and UNIX domain sockets are supported.
+TLS encryption can be configured using \fB\-\-object\fP tls\-creds\-* and authz\-*
+secrets (see below).
+.sp
+To configure an NBD server on UNIX domain socket path \fB/tmp/nbd.sock\fP:
+.INDENT 7.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+\-\-nbd\-server addr.type=unix,addr.path=/tmp/nbd.sock
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-\-object help
+.TP
+.B \-\-object <type>,help
+.TP
+.B \-\-object <type>[,<property>=<value>...]
+is a QEMU user creatable object definition. List object types with \fBhelp\fP\&.
+List object properties with \fB<type>,help\fP\&. See the \fBqemu(1)\fP
+manual page for a description of the object properties.
+.UNINDENT
+.SH EXAMPLES
+.sp
+Launch the daemon with QMP monitor socket \fBqmp.sock\fP so clients can execute
+QMP commands:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+$ qemu\-storage\-daemon \e
+    \-\-chardev socket,path=qmp.sock,server,nowait,id=char1 \e
+    \-\-monitor chardev=char1
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+Export raw image file \fBdisk.img\fP over NBD UNIX domain socket \fBnbd.sock\fP:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+$ qemu\-storage\-daemon \e
+    \-\-blockdev driver=file,node\-name=disk,filename=disk.img \e
+    \-\-nbd\-server addr.type=unix,addr.path=nbd.sock \e
+    \-\-export type=nbd,id=export,node\-name=disk,writable=on
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+Export a qcow2 image file \fBdisk.qcow2\fP as a vhosts\-user\-blk device over UNIX
+domain socket \fBvhost\-user\-blk.sock\fP:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+$ qemu\-storage\-daemon \e
+    \-\-blockdev driver=file,node\-name=file,filename=disk.qcow2 \e
+    \-\-blockdev driver=qcow2,node\-name=qcow2,file=file \e
+    \-\-export type=vhost\-user\-blk,id=export,addr.type=unix,addr.path=vhost\-user\-blk.sock,node\-name=qcow2
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.SH SEE ALSO
+.sp
+\fBqemu(1)\fP, \fBqemu\-block\-drivers(7)\fP, \fBqemu\-storage\-daemon\-qmp\-ref(7)\fP
+.SH COPYRIGHT
+2020, The QEMU Project Developers
+.\" Generated by docutils manpage writer.
+.

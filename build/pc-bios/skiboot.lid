@@ -1,0 +1,1 @@
+/home/coburn/Development/qemu/pc-bios/skiboot.lid
