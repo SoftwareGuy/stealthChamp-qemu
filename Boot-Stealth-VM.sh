@@ -15,7 +15,7 @@ BIOS_NVRAM_PATH="$(pwd)/bios/nvram.fd"
 HARD_DISK_PATH="$(pwd)/disk/hdd.img"
 
 
-exec /opt/qemu-stealth/bin/qemu-system-x86_64 \
+exec /opt/stealth-qemu/bin/qemu-system-x86_64 \
 	-machine q35 \
 	-cpu host,-hypervisor,-rdtscp,-invtsc,kvm-asyncpf-int,hv-relaxed,hv-spinlocks=0x1fff,hv-vendor-id=unknown0000,kvm=off,kvm-hint-dedicated=on,host-cache-info=on,hv-vapic=off,hv-synic=off,hv-stimer=off \
 	-smp sockets=1,cores=2,threads=1 \

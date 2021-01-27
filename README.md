@@ -29,6 +29,8 @@ Compiling and installation was done on Linux Mint 20.1 which is based on Ubuntu.
 
 See the included shell script to boot a QEMU instance with stealth mode enabled.
 
+I highly recommend not running the script in this work directory, though. It will get very messy. Copy it to a fresh work directory in your home folder.
+
 ## Performance Hits Inbound
 
 This version of QEMU requires you to disable specific CPU instructions in order to boot your OS. This will encur performance penalities since the emulator will no longer expose those
