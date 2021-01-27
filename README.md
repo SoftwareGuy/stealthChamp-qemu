@@ -63,7 +63,7 @@ For example, your work directory could be like:
 ## Performance Hits Inbound
 
 This version of QEMU requires you to disable specific CPU instructions in order to boot your OS. This will encur performance penalities since the emulator will no longer expose those
-virtual machine CPU instructions and the OS may fail to boot correctly. I would not use this for extensive gaming, but for reverse engineering and various other uses it's good enough.
+virtual machine CPU instructions and the OS may fail to boot correctly if the instructions are exposed since the patch modifies them. I would not use this for extensive gaming, but for reverse engineering and various other uses it's good enough.
 
 ## Credits
 
